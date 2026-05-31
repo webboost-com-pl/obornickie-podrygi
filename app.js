@@ -97,17 +97,17 @@ async function loadGame() {
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
+  
+if (!profile) {
+  const nick = user.user_metadata?.nick;
 
-  if (!profile) {
-    const nick = user.user_metadata?.nick || "Gracz";
-
-    const { error: insertError } = await db.from("profiles").insert({
-      id: user.id,
-      nick: nick,
-      podrygi: 1000,
-      level: 1,
-      xp: 0
-    });
+  const { error: insertError } = await db.from("profiles").insert({
+    id: user.id,
+    nick: nick,
+    podrygi: 1000,
+    level: 1,
+    xp: 0
+  });
 
     if (insertError) {
       message.textContent = "Nie udało się utworzyć profilu: " + insertError.message;
