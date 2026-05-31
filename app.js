@@ -32,6 +32,9 @@ function showPage(pageId) {
   if (pageId === "attackPage") {
     loadPlayersForAttack();
   }
+  if (pageId === "historyPage") {
+  loadHistory();
+}
 }
 
 async function register() {
@@ -279,7 +282,61 @@ async function attackPlayer(targetId) {
 }
 
 loadGame();
+async function loadHistory() {
+  const historyList = document.getElementById("historyList");
 
+  const { data: userData } = await db.auth.getUser();
+  const currentUser = userData.user;
+
+  const { data, error } = await db
+    .from("actions_log")
+    .select("*")
+    .or(`user_id.eq.${currentUser.id},target_id.eq.${currentUser.id}`)
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    historyList.innerHTML = "Nie udało się załadować historii.";
+    return;
+  }
+
+  historyList.innerHTML = "";
+
+  data.forEach(action => {
+
+    let text = "";
+
+    if (action.action_type === "daily_reward") {
+      text = `🎁 Odebrano ${action.amount} GC`;
+    }
+
+    if (action.action_type === "buy_shield") {
+      text = `🛡️ Kupiono tarczę`;
+    }
+
+    if (action.action_type === "buy_attack_ticket") {
+      text = `💣 Kupiono bilet napadu`;
+    }
+
+    if (action.action_type === "attack_failed") {
+      text = `⚔️ Nieudany napad`;
+    }
+
+    if (action.action_type === "attack_blocked") {
+      text = `🛡️ Tarcza zablokowała atak`;
+    }
+
+    if (action.action_type === "attack_success") {
+      text = `⚔️ Udany napad (+${action.amount} GC)`;
+    }
+
+    historyList.innerHTML += `
+      <div class="rankingItem">
+        ${text}
+      </div>
+    `;
+  });
+}
 window.showScreen = showScreen;
 window.showPage = showPage;
 window.register = register;
