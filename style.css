@@ -2,27 +2,30 @@
   box-sizing: border-box;
 }
 
+html {
+  width: 100%;
+  min-height: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: Arial, sans-serif;
   background: radial-gradient(circle at top, #1f1238, #07070d 60%);
   color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .app {
-  width: 430px;
-  max-width: 92vw;
+  width: 100%;
+  max-width: 460px;
+  min-height: 100vh;
+  margin: 0 auto;
   background: #151522;
-  padding: 30px;
-  border-radius: 26px;
-  box-shadow: 0 0 50px rgba(123, 44, 255, 0.35);
+  padding: 24px;
 }
 
 .screen {
+  min-height: calc(100vh - 48px);
   animation: fadeIn 0.25s ease;
 }
 
@@ -31,22 +34,25 @@ body {
 }
 
 .logo {
-  font-size: 46px;
+  font-size: 56px;
   text-align: center;
-  margin-bottom: 10px;
+  margin-top: 40px;
+  margin-bottom: 16px;
 }
 
 h1 {
   text-align: center;
   color: #ffffff;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
+  font-size: 34px;
 }
 
 .subtitle {
   text-align: center;
   color: #aaaac0;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
   line-height: 1.5;
+  font-size: 17px;
 }
 
 .smallText {
@@ -55,13 +61,14 @@ h1 {
   font-size: 13px;
 }
 
-input, button {
+input,
+button {
   width: 100%;
-  padding: 14px;
-  margin-top: 12px;
-  border-radius: 14px;
+  padding: 17px;
+  margin-top: 13px;
+  border-radius: 16px;
   border: none;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 input {
@@ -77,16 +84,8 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #9c5cff;
-}
-
 .secondary {
   background: #29293d;
-}
-
-.secondary:hover {
-  background: #34344d;
 }
 
 .gameHeader {
@@ -97,26 +96,31 @@ button:hover {
 
 .gameHeader h1 {
   text-align: left;
-  margin: 4px 0 0;
+  font-size: 28px;
 }
 
 .logoutBtn {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   padding: 0;
 }
 
-.playerCard {
+.playerCard,
+.empty,
+.rankingItem {
   background: #202033;
   padding: 18px;
   border-radius: 18px;
-  margin: 22px 0;
   border: 1px solid #30304a;
 }
 
+.playerCard {
+  margin: 22px 0;
+}
+
 .playerCard p {
-  margin: 9px 0;
-  font-size: 17px;
+  margin: 10px 0;
+  font-size: 18px;
 }
 
 .page h2 {
@@ -124,17 +128,7 @@ button:hover {
   color: #d8b4ff;
 }
 
-.empty {
-  color: #aaaac0;
-  background: #202033;
-  padding: 16px;
-  border-radius: 14px;
-}
-
 .rankingItem {
-  background: #202033;
-  padding: 14px;
-  border-radius: 14px;
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
@@ -142,21 +136,46 @@ button:hover {
 }
 
 .bottomNav {
+  position: sticky;
+  bottom: 0;
   display: flex;
   gap: 8px;
   margin-top: 22px;
+  padding-top: 12px;
+  background: #151522;
 }
 
 .bottomNav button {
-  font-size: 20px;
-  padding: 12px;
+  font-size: 22px;
+  padding: 14px;
 }
 
 #message {
   text-align: center;
   color: #ffd36c;
-  min-height: 22px;
+  min-height: 24px;
   margin-top: 18px;
+  font-size: 15px;
+}
+
+@media (max-width: 520px) {
+  .app {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    padding: 22px;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  button,
+  input {
+    font-size: 17px;
+    padding: 18px;
+  }
 }
 
 @keyframes fadeIn {
@@ -164,6 +183,7 @@ button:hover {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
