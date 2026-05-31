@@ -146,7 +146,7 @@ async function loadRanking() {
 
   const { data, error } = await db
     .from("profiles")
-    .select("nick, podrygi")
+    .select("nick, podrygi, level")
     .order("podrygi", { ascending: false });
 
   if (error) {
@@ -156,14 +156,17 @@ async function loadRanking() {
 
   rankingList.innerHTML = "";
 
-  data.forEach((player, index) => {
-    rankingList.innerHTML += `
-      <div class="rankingItem">
-        <b>${index + 1}. ${player.nick}</b>
-        <span>${player.podrygi} GC</span>
+data.forEach((player, index) => {
+  rankingList.innerHTML += `
+    <div class="rankingItem">
+      <div>
+        <b>${index + 1}. ${player.nick}</b><br>
+        <span>⭐ Level ${player.level}</span>
       </div>
-    `;
-  });
+      <span>${player.podrygi} GC</span>
+    </div>
+  `;
+});
 }
 
 async function claimDailyReward() {
