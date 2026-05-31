@@ -8,18 +8,23 @@ const gameBox = document.getElementById("gameBox");
 const message = document.getElementById("message");
 
 async function register() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const nick = document.getElementById("nick").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const nick = document.getElementById("nick").value.trim();
 
   if (!email || !password || !nick) {
     message.textContent = "Wpisz email, hasło i nick.";
     return;
   }
 
-  const { data, error } = await db.auth.signUp({
+  const { error } = await db.auth.signUp({
     email: email,
-    password: password
+    password: password,
+    options: {
+      data: {
+        nick: nick
+      }
+    }
   });
 
   if (error) {
@@ -27,22 +32,19 @@ async function register() {
     return;
   }
 
-  const user = data.user;
-
-  await db.from("profiles").insert({
-    id: user.id,
-    nick: nick,
-    podrygi: 1000
-  });
-
-  message.textContent = "Konto utworzone. Możesz się zalogować.";
+  message.textContent = "Konto utworzone. Sprawdź maila i potwierdź konto.";
 }
 
 async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  const { data, error } = await db.auth.signInWithPassword({
+  if (!email || !password) {
+    message.textContent = "Wpisz email i hasło.";
+    return;
+  }
+
+  const { error } = await db.auth.signInWithPassword({
     email: email,
     password: password
   });
@@ -52,7 +54,7 @@ async function login() {
     return;
   }
 
-  loadGame();
+  await loadGame();
 }
 
 async function loadGame() {
@@ -61,14 +63,37 @@ async function loadGame() {
 
   if (!user) return;
 
-  const { data: profile, error } = await db
+  let { data: profile, error: profileError } = await db
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (error) {
-    message.textContent = "Nie znaleziono profilu.";
+  if (!profile) {
+    const nick = user.user_metadata?.nick || "Gracz";
+
+    const { error: insertError } = await db.from("profiles").insert({
+      id: user.id,
+      nick: nick,
+      podrygi: 1000
+    });
+
+    if (insertError) {
+      message.textContent = "Nie udało się utworzyć profilu: " + insertError.message;
+      return;
+    }
+
+    const result = await db
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    profile = result.data;
+  }
+
+  if (!profile) {
+    message.textContent = "Nie udało się załadować profilu.";
     return;
   }
 
@@ -82,12 +107,15 @@ async function loadGame() {
 
 async function logout() {
   await db.auth.signOut();
+
   authBox.classList.remove("hidden");
   gameBox.classList.add("hidden");
+
   message.textContent = "Wylogowano.";
 }
 
 loadGame();
+
 window.register = register;
 window.login = login;
 window.logout = logout;
