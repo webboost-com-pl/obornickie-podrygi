@@ -1,1 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Obornickie Podrygi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+  <div class="app">
+    <h1>Obornickie Podrygi</h1>
+
+    <div id="authBox">
+      <input id="email" type="email" placeholder="Email">
+      <input id="password" type="password" placeholder="Hasło">
+      <input id="nick" type="text" placeholder="Nick">
+
+      <button onclick="register()">Zarejestruj</button>
+      <button onclick="login()">Zaloguj</button>
+    </div>
+
+    <div id="gameBox" class="hidden">
+      <h2 id="helloText"></h2>
+      <p>Twoje Podrygi: <b id="podrygiAmount">0</b></p>
+
+      <button onclick="logout()">Wyloguj</button>
+    </div>
+
+    <p id="message"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
