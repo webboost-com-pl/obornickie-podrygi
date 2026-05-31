@@ -3,14 +3,33 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const authBox = document.getElementById("authBox");
-const gameBox = document.getElementById("gameBox");
 const message = document.getElementById("message");
 
+function showScreen(screenId) {
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.add("hidden");
+  });
+
+  document.getElementById(screenId).classList.remove("hidden");
+  message.textContent = "";
+}
+
+function showPage(pageId) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.add("hidden");
+  });
+
+  document.getElementById(pageId).classList.remove("hidden");
+
+  if (pageId === "rankingPage") {
+    loadRanking();
+  }
+}
+
 async function register() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const nick = document.getElementById("nick").value.trim();
+  const email = document.getElementById("registerEmail").value.trim();
+  const password = document.getElementById("registerPassword").value.trim();
+  const nick = document.getElementById("registerNick").value.trim();
 
   if (!email || !password || !nick) {
     message.textContent = "Wpisz email, hasło i nick.";
@@ -18,11 +37,11 @@ async function register() {
   }
 
   const { error } = await db.auth.signUp({
-    email: email,
-    password: password,
+    email,
+    password,
     options: {
       data: {
-        nick: nick
+        nick
       }
     }
   });
@@ -32,12 +51,13 @@ async function register() {
     return;
   }
 
-  message.textContent = "Konto utworzone. Sprawdź maila i potwierdź konto.";
+  message.textContent = "Konto utworzone. Potwierdź email i zaloguj się.";
+  showScreen("loginScreen");
 }
 
 async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
 
   if (!email || !password) {
     message.textContent = "Wpisz email i hasło.";
@@ -45,8 +65,8 @@ async function login() {
   }
 
   const { error } = await db.auth.signInWithPassword({
-    email: email,
-    password: password
+    email,
+    password
   });
 
   if (error) {
@@ -61,9 +81,12 @@ async function loadGame() {
   const { data: userData } = await db.auth.getUser();
   const user = userData.user;
 
-  if (!user) return;
+  if (!user) {
+    showScreen("startScreen");
+    return;
+  }
 
-  let { data: profile, error: profileError } = await db
+  let { data: profile } = await db
     .from("profiles")
     .select("*")
     .eq("id", user.id)
@@ -75,7 +98,9 @@ async function loadGame() {
     const { error: insertError } = await db.from("profiles").insert({
       id: user.id,
       nick: nick,
-      podrygi: 1000
+      podrygi: 1000,
+      level: 1,
+      xp: 0
     });
 
     if (insertError) {
@@ -92,30 +117,55 @@ async function loadGame() {
     profile = result.data;
   }
 
-  if (!profile) {
-    message.textContent = "Nie udało się załadować profilu.";
-    return;
-  }
+  document.getElementById("helloText").textContent = profile.nick;
+  document.getElementById("coinsAmount").textContent = profile.podrygi;
+  document.getElementById("levelAmount").textContent = profile.level;
+  document.getElementById("xpAmount").textContent = profile.xp;
 
-  authBox.classList.add("hidden");
-  gameBox.classList.remove("hidden");
-
-  document.getElementById("helloText").textContent = "Siema, " + profile.nick;
-  document.getElementById("podrygiAmount").textContent = profile.podrygi;
-  message.textContent = "";
+  showScreen("appScreen");
+  showPage("homePage");
 }
 
 async function logout() {
   await db.auth.signOut();
-
-  authBox.classList.remove("hidden");
-  gameBox.classList.add("hidden");
-
+  showScreen("startScreen");
   message.textContent = "Wylogowano.";
+}
+
+async function loadRanking() {
+  const rankingList = document.getElementById("rankingList");
+
+  const { data, error } = await db
+    .from("profiles")
+    .select("nick, podrygi")
+    .order("podrygi", { ascending: false });
+
+  if (error) {
+    rankingList.innerHTML = "Nie udało się załadować rankingu.";
+    return;
+  }
+
+  rankingList.innerHTML = "";
+
+  data.forEach((player, index) => {
+    rankingList.innerHTML += `
+      <div class="rankingItem">
+        <b>${index + 1}. ${player.nick}</b>
+        <span>${player.podrygi} GC</span>
+      </div>
+    `;
+  });
+}
+
+function claimDailyReward() {
+  message.textContent = "Codzienna nagroda będzie w następnym kroku.";
 }
 
 loadGame();
 
+window.showScreen = showScreen;
+window.showPage = showPage;
 window.register = register;
 window.login = login;
 window.logout = logout;
+window.claimDailyReward = claimDailyReward;
