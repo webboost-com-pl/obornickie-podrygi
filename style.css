@@ -201,3 +201,13 @@ button {
 .rankingItem button {
   align-self: center;
 }
+.chestAnimation {
+  margin-top: 18px;
+  padding: 24px;
+  background: #202033;
+  border: 1px solid #3f3f60;
+  border-radius: 18px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+}
