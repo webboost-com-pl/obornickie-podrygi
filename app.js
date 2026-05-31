@@ -88,3 +88,6 @@ async function logout() {
 }
 
 loadGame();
+window.register = register;
+window.login = login;
+window.logout = logout;
