@@ -24,6 +24,14 @@ function showPage(pageId) {
   if (pageId === "rankingPage") {
     loadRanking();
   }
+
+  if (pageId === "inventoryPage") {
+    loadInventory();
+  }
+
+  if (pageId === "attackPage") {
+    loadPlayersForAttack();
+  }
 }
 
 async function register() {
@@ -40,9 +48,7 @@ async function register() {
     email,
     password,
     options: {
-      data: {
-        nick
-      }
+      data: { nick }
     }
   });
 
@@ -157,8 +163,119 @@ async function loadRanking() {
   });
 }
 
-function claimDailyReward() {
-  message.textContent = "Codzienna nagroda będzie w następnym kroku.";
+async function claimDailyReward() {
+  const { data, error } = await db.rpc("claim_daily_reward");
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = `Odebrano ${data} Gomancoins.`;
+  await loadGame();
+}
+
+async function buyItem(itemName) {
+  const { data, error } = await db.rpc("buy_item", {
+    item: itemName
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = data;
+  await loadGame();
+  await loadInventory();
+}
+
+async function loadInventory() {
+  const inventoryList = document.getElementById("inventoryList");
+
+  const { data, error } = await db
+    .from("inventory")
+    .select("item_name, quantity");
+
+  if (error) {
+    inventoryList.innerHTML = "Nie udało się załadować ekwipunku.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    inventoryList.innerHTML = `<p class="empty">Nie masz jeszcze przedmiotów.</p>`;
+    return;
+  }
+
+  inventoryList.innerHTML = "";
+
+  data.forEach(item => {
+    let name = item.item_name;
+
+    if (name === "shield") name = "🛡️ Tarcza Gomanowa";
+    if (name === "attack_ticket") name = "💣 Bilet Napadu";
+    if (name === "chest") name = "🎁 Skrzynka Gomanów";
+
+    inventoryList.innerHTML += `
+      <div class="rankingItem">
+        <b>${name}</b>
+        <span>x${item.quantity}</span>
+      </div>
+    `;
+  });
+}
+
+async function loadPlayersForAttack() {
+  const playersList = document.getElementById("playersList");
+
+  const { data: userData } = await db.auth.getUser();
+  const currentUser = userData.user;
+
+  const { data, error } = await db
+    .from("profiles")
+    .select("id, nick, podrygi")
+    .neq("id", currentUser.id)
+    .order("podrygi", { ascending: false });
+
+  if (error) {
+    playersList.innerHTML = "Nie udało się załadować graczy.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    playersList.innerHTML = `<p class="empty">Nie ma jeszcze innych graczy.</p>`;
+    return;
+  }
+
+  playersList.innerHTML = "";
+
+  data.forEach(player => {
+    playersList.innerHTML += `
+      <div class="rankingItem">
+        <div>
+          <b>${player.nick}</b><br>
+          <span>${player.podrygi} GC</span>
+        </div>
+        <button class="smallBtn" onclick="attackPlayer('${player.id}')">Atakuj</button>
+      </div>
+    `;
+  });
+}
+
+async function attackPlayer(targetId) {
+  const { data, error } = await db.rpc("attack_player", {
+    target: targetId
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = data;
+  await loadGame();
+  await loadPlayersForAttack();
+  await loadRanking();
 }
 
 loadGame();
@@ -169,3 +286,5 @@ window.register = register;
 window.login = login;
 window.logout = logout;
 window.claimDailyReward = claimDailyReward;
+window.buyItem = buyItem;
+window.attackPlayer = attackPlayer;
