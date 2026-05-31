@@ -1,38 +1,73 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
-  background: #09090f;
+  background: radial-gradient(circle at top, #1f1238, #07070d 60%);
   color: white;
   display: flex;
   justify-content: center;
-  padding-top: 80px;
+  align-items: center;
 }
 
 .app {
-  width: 360px;
+  width: 430px;
+  max-width: 92vw;
   background: #151522;
-  padding: 25px;
-  border-radius: 18px;
-  box-shadow: 0 0 30px rgba(140, 0, 255, 0.3);
+  padding: 30px;
+  border-radius: 26px;
+  box-shadow: 0 0 50px rgba(123, 44, 255, 0.35);
+}
+
+.screen {
+  animation: fadeIn 0.25s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.logo {
+  font-size: 46px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 h1 {
   text-align: center;
-  color: #b56cff;
+  color: #ffffff;
+  margin: 0 0 10px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #aaaac0;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.smallText {
+  color: #aaaac0;
+  margin: 0;
+  font-size: 13px;
 }
 
 input, button {
   width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
+  padding: 14px;
   margin-top: 12px;
-  border-radius: 10px;
+  border-radius: 14px;
   border: none;
+  font-size: 15px;
 }
 
 input {
   background: #232335;
   color: white;
+  outline: none;
 }
 
 button {
@@ -43,15 +78,94 @@ button {
 }
 
 button:hover {
-  background: #9d5cff;
+  background: #9c5cff;
 }
 
-.hidden {
-  display: none;
+.secondary {
+  background: #29293d;
+}
+
+.secondary:hover {
+  background: #34344d;
+}
+
+.gameHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gameHeader h1 {
+  text-align: left;
+  margin: 4px 0 0;
+}
+
+.logoutBtn {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+}
+
+.playerCard {
+  background: #202033;
+  padding: 18px;
+  border-radius: 18px;
+  margin: 22px 0;
+  border: 1px solid #30304a;
+}
+
+.playerCard p {
+  margin: 9px 0;
+  font-size: 17px;
+}
+
+.page h2 {
+  margin-top: 0;
+  color: #d8b4ff;
+}
+
+.empty {
+  color: #aaaac0;
+  background: #202033;
+  padding: 16px;
+  border-radius: 14px;
+}
+
+.rankingItem {
+  background: #202033;
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bottomNav {
+  display: flex;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.bottomNav button {
+  font-size: 20px;
+  padding: 12px;
 }
 
 #message {
   text-align: center;
-  margin-top: 15px;
   color: #ffd36c;
+  min-height: 22px;
+  margin-top: 18px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
