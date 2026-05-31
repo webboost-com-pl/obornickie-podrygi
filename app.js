@@ -284,7 +284,38 @@ async function attackPlayer(targetId) {
   await loadPlayersForAttack();
   await loadRanking();
 }
+async function openChestWithAnimation() {
+  const box = document.getElementById("chestAnimation");
 
+  const icons = ["🪙", "🎟️", "🛡️", "💎", "⭐", "👑", "🔥"];
+  let counter = 0;
+
+  box.classList.remove("hidden");
+  box.innerHTML = "🎁 Otwieranie...";
+
+  const animation = setInterval(() => {
+    box.innerHTML = icons[counter % icons.length];
+    counter++;
+  }, 120);
+
+  setTimeout(async () => {
+    clearInterval(animation);
+
+    const { data, error } = await db.rpc("open_chest");
+
+    if (error) {
+      box.innerHTML = "❌ " + error.message;
+      message.textContent = error.message;
+      return;
+    }
+
+    box.innerHTML = data;
+    message.textContent = data;
+
+    await loadGame();
+    await loadInventory();
+  }, 3000);
+}
 loadGame();
 async function loadHistory() {
   const historyList = document.getElementById("historyList");
@@ -349,3 +380,4 @@ window.logout = logout;
 window.claimDailyReward = claimDailyReward;
 window.buyItem = buyItem;
 window.attackPlayer = attackPlayer;
+window.openChestWithAnimation = openChestWithAnimation;
