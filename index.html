@@ -67,14 +67,14 @@
 
     <div id="shopPage" class="page hidden">
       <h2>🛒 Sklep</h2>
-      <button>🛡️ Tarcza Gomanowa — 1000 Gomancoins</button>
-      <button>💣 Bilet Napadu — 700 Gomancoins</button>
-      <button>🎁 Skrzynka Gomanów — 1500 Gomancoins</button>
+     <button onclick="buyItem('shield')">🛡️ Tarcza Gomanowa — 1000 Gomancoins</button>
+      <button onclick="buyItem('attack_ticket')">💣 Bilet Napadu — 700 Gomancoins</button>
+      <button onclick="buyItem('chest')">🎁 Skrzynka Gomanów — 1500 Gomancoins</button>
     </div>
 
     <div id="inventoryPage" class="page hidden">
       <h2>🎒 Ekwipunek</h2>
-      <p class="empty">Tutaj będą Twoje przedmioty.</p>
+      <div id="inventoryList">Ładowanie ekwipunku...</div>
     </div>
 
     <div id="rankingPage" class="page hidden">
@@ -84,7 +84,7 @@
 
     <div id="attackPage" class="page hidden">
       <h2>⚔️ Napady</h2>
-      <p class="empty">Tutaj będzie lista graczy do ataku.</p>
+      <div id="playersList">Ładowanie graczy...</div>
     </div>
 
     <nav class="bottomNav">
