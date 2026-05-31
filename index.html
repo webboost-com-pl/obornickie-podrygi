@@ -63,6 +63,8 @@
       <button onclick="showPage('inventoryPage')">🎒 Ekwipunek</button>
       <button onclick="showPage('rankingPage')">🏆 Ranking</button>
       <button onclick="showPage('attackPage')">⚔️ Napady</button>
+      
+      
     </div>
 
     <div id="shopPage" class="page hidden">
@@ -86,14 +88,18 @@
       <h2>⚔️ Napady</h2>
       <div id="playersList">Ładowanie graczy...</div>
     </div>
-
-    <nav class="bottomNav">
-      <button onclick="showPage('homePage')">🏠</button>
-      <button onclick="showPage('inventoryPage')">🎒</button>
-      <button onclick="showPage('rankingPage')">🏆</button>
-      <button onclick="showPage('attackPage')">⚔️</button>
-      <button onclick="logout()">🚪</button>
-    </nav>
+<div id="historyPage" class="page hidden">
+  <h2>📜 Historia</h2>
+  <div id="historyList">Ładowanie historii...</div>
+</div>
+<nav class="bottomNav">
+  <button onclick="showPage('homePage')">🏠</button>
+  <button onclick="showPage('inventoryPage')">🎒</button>
+  <button onclick="showPage('rankingPage')">🏆</button>
+  <button onclick="showPage('attackPage')">⚔️</button>
+  <button onclick="showPage('historyPage')">📜</button>
+  <button onclick="logout()">🚪</button>
+</nav>
   </section>
 
   <p id="message"></p>
