@@ -189,3 +189,15 @@ button {
     transform: translateY(0);
   }
 }
+.smallBtn {
+  width: auto;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-top: 0;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.rankingItem button {
+  align-self: center;
+}
