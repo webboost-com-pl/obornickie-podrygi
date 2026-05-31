@@ -196,9 +196,10 @@ async function buyItem(itemName) {
 async function loadInventory() {
   const inventoryList = document.getElementById("inventoryList");
 
-  const { data, error } = await db
-    .from("inventory")
-    .select("item_name, quantity");
+const { data, error } = await db
+  .from("inventory")
+  .select("item_name, quantity")
+  .gt("quantity", 0);
 
   if (error) {
     inventoryList.innerHTML = "Nie udało się załadować ekwipunku.";
