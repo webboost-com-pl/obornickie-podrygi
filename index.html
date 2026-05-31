@@ -1,35 +1,105 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Obornickie Podrygi</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div class="app">
+<main class="app">
+
+  <section id="startScreen" class="screen">
+    <div class="logo">🎮</div>
     <h1>Obornickie Podrygi</h1>
+    <p class="subtitle">Zbieraj Gomancoins, rywalizuj ze znajomymi i buduj swój majątek.</p>
 
-    <div id="authBox">
-      <input id="email" type="email" placeholder="Email">
-      <input id="password" type="password" placeholder="Hasło">
-      <input id="nick" type="text" placeholder="Nick">
+    <button onclick="showScreen('loginScreen')">Zaloguj się</button>
+    <button class="secondary" onclick="showScreen('registerScreen')">Załóż konto</button>
+  </section>
 
-      <button onclick="register()">Zarejestruj</button>
-      <button onclick="login()">Zaloguj</button>
+  <section id="registerScreen" class="screen hidden">
+    <h1>Załóż konto</h1>
+    <p class="subtitle">Stwórz profil gracza i zacznij z 1000 Gomancoins.</p>
+
+    <input id="registerEmail" type="email" placeholder="Email" />
+    <input id="registerPassword" type="password" placeholder="Hasło" />
+    <input id="registerNick" type="text" placeholder="Nick" />
+
+    <button onclick="register()">Utwórz konto</button>
+    <button class="secondary" onclick="showScreen('loginScreen')">Mam już konto</button>
+  </section>
+
+  <section id="loginScreen" class="screen hidden">
+    <h1>Logowanie</h1>
+    <p class="subtitle">Wróć do swojej gospodarki Gomancoins.</p>
+
+    <input id="loginEmail" type="email" placeholder="Email" />
+    <input id="loginPassword" type="password" placeholder="Hasło" />
+
+    <button onclick="login()">Zaloguj</button>
+    <button class="secondary" onclick="showScreen('registerScreen')">Nie mam konta</button>
+  </section>
+
+  <section id="appScreen" class="screen hidden">
+    <header class="gameHeader">
+      <div>
+        <p class="smallText">Zalogowano jako</p>
+        <h1 id="helloText">Gracz</h1>
+      </div>
+      <button class="logoutBtn" onclick="logout()">🚪</button>
+    </header>
+
+    <div class="playerCard">
+      <p>💰 Gomancoins: <b id="coinsAmount">0</b></p>
+      <p>⭐ Poziom: <b id="levelAmount">1</b></p>
+      <p>⚡ XP: <b id="xpAmount">0</b>/100</p>
     </div>
 
-    <div id="gameBox" class="hidden">
-      <h2 id="helloText"></h2>
-      <p>Twoje Podrygi: <b id="podrygiAmount">0</b></p>
-
-      <button onclick="logout()">Wyloguj</button>
+    <div id="homePage" class="page">
+      <button onclick="claimDailyReward()">🎁 Odbierz codzienną nagrodę</button>
+      <button onclick="showPage('shopPage')">🛒 Sklep</button>
+      <button onclick="showPage('inventoryPage')">🎒 Ekwipunek</button>
+      <button onclick="showPage('rankingPage')">🏆 Ranking</button>
+      <button onclick="showPage('attackPage')">⚔️ Napady</button>
     </div>
 
-    <p id="message"></p>
-  </div>
+    <div id="shopPage" class="page hidden">
+      <h2>🛒 Sklep</h2>
+      <button>🛡️ Tarcza Gomanowa — 1000 Gomancoins</button>
+      <button>💣 Bilet Napadu — 700 Gomancoins</button>
+      <button>🎁 Skrzynka Gomanów — 1500 Gomancoins</button>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+    <div id="inventoryPage" class="page hidden">
+      <h2>🎒 Ekwipunek</h2>
+      <p class="empty">Tutaj będą Twoje przedmioty.</p>
+    </div>
+
+    <div id="rankingPage" class="page hidden">
+      <h2>🏆 Ranking</h2>
+      <div id="rankingList">Ładowanie...</div>
+    </div>
+
+    <div id="attackPage" class="page hidden">
+      <h2>⚔️ Napady</h2>
+      <p class="empty">Tutaj będzie lista graczy do ataku.</p>
+    </div>
+
+    <nav class="bottomNav">
+      <button onclick="showPage('homePage')">🏠</button>
+      <button onclick="showPage('inventoryPage')">🎒</button>
+      <button onclick="showPage('rankingPage')">🏆</button>
+      <button onclick="showPage('attackPage')">⚔️</button>
+      <button onclick="logout()">🚪</button>
+    </nav>
+  </section>
+
+  <p id="message"></p>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
 </body>
 </html>
