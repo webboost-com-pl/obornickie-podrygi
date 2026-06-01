@@ -315,24 +315,41 @@ async function openChestWithAnimation() {
 async function loadStocks() {
   const stocksList = document.getElementById("stocksList");
 
-  const { data, error } = await db
+  const { data: stocks, error: stocksError } = await db
     .from("stocks")
     .select("*")
     .order("id", { ascending: true });
-console.log("stocks data:", data);
-console.log("stocks error:", error);
-  if (error) {
+
+  const { data: portfolio, error: portfolioError } = await db
+    .from("player_stocks")
+    .select("stock_id, quantity");
+
+  if (stocksError || portfolioError) {
     stocksList.innerHTML = "Nie udało się załadować giełdy.";
     return;
   }
 
   stocksList.innerHTML = "";
 
-  data.forEach(stock => {
+  stocks.forEach(stock => {
+    const owned = portfolio.find(item => item.stock_id === stock.id);
+    const quantity = owned ? owned.quantity : 0;
+    const value = quantity * Number(stock.price);
+    const percent = ((Number(stock.price) - 100) / 100) * 100;
+
     stocksList.innerHTML += `
       <div class="stockCard">
         <h3>${stock.name}</h3>
+
         <p>Aktualna cena: <b>${Number(stock.price).toFixed(2)} GC</b></p>
+        <p>Zmiana od startu: <b>${percent.toFixed(2)}%</b></p>
+
+        <div class="miniChart">
+          <div class="miniChartLine" style="width:${Math.min(Math.max(Number(stock.price), 10), 250)}px"></div>
+        </div>
+
+        <p>Masz: <b>${quantity}</b> akcji</p>
+        <p>Wartość: <b>${value.toFixed(2)} GC</b></p>
 
         <div class="stockActions">
           <button onclick="buyStock(${stock.id}, 1)">Kup 1</button>
