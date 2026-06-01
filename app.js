@@ -21,23 +21,13 @@ function showPage(pageId) {
 
   document.getElementById(pageId).classList.remove("hidden");
 
-  if (pageId === "rankingPage") {
-    loadRanking();
-  }
-
-  if (pageId === "inventoryPage") {
-    loadInventory();
-  }
-
-  if (pageId === "attackPage") {
-    loadPlayersForAttack();
-  }
-
-  if (pageId === "historyPage") {
-    loadHistory();
-  }
+  if (pageId === "rankingPage") loadRanking();
+  if (pageId === "inventoryPage") loadInventory();
+  if (pageId === "attackPage") loadPlayersForAttack();
+  if (pageId === "historyPage") loadHistory();
 
   if (pageId === "stocksPage") {
+    console.log("Ładuję giełdę");
     loadStocks();
     loadPortfolio();
   }
@@ -329,7 +319,8 @@ async function loadStocks() {
     .from("stocks")
     .select("*")
     .order("id", { ascending: true });
-
+console.log("stocks data:", data);
+console.log("stocks error:", error);
   if (error) {
     stocksList.innerHTML = "Nie udało się załadować giełdy.";
     return;
