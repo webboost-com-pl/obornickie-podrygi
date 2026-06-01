@@ -174,7 +174,7 @@ async function claimDailyReward() {
   }
 
   message.textContent = `Odebrano ${data} Gomancoins.`;
-  await loadGame();
+  await refreshPlayerStats();
 }
 
 async function buyItem(itemName) {
@@ -416,9 +416,9 @@ async function buyStock(stockId, amount) {
 
   message.textContent = data;
 
-  await loadGame();
-  await loadStocks();
-  await loadPortfolio();
+  await refreshPlayerStats();
+await loadStocks();
+await loadPortfolio();
 }
 
 async function sellStock(stockId, amount) {
@@ -434,11 +434,38 @@ async function sellStock(stockId, amount) {
 
   message.textContent = data;
 
-  await loadGame();
+ await refreshPlayerStats();
+await loadStocks();
+await loadPortfolio();
+}
+async function updateStocksFromGame() {
+  const { data, error } = await db.rpc("update_stock_prices");
+
+  if (error) {
+    console.log("Błąd aktualizacji giełdy:", error.message);
+    return;
+  }
+
+  console.log(data);
+
   await loadStocks();
   await loadPortfolio();
 }
 loadGame();
+async function refreshPlayerStats() {
+  const { data: userData } = await db.auth.getUser();
+  const user = userData.user;
+
+  const { data: profile } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  document.getElementById("coinsAmount").textContent = profile.podrygi;
+  document.getElementById("levelAmount").textContent = profile.level;
+  document.getElementById("xpAmount").textContent = profile.xp;
+}
 async function loadHistory() {
   const historyList = document.getElementById("historyList");
 
@@ -518,5 +545,7 @@ async function testStocks() {
 
   alert(JSON.stringify(data) + " / " + JSON.stringify(error));
 }
-
+setInterval(() => {
+  updateStocksFromGame();
+}, 60000);
 window.testStocks = testStocks;
