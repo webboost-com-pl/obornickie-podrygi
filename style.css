@@ -247,3 +247,12 @@ button {
   background: #7b2cff;
   border-radius: 999px;
 }
+.stockChart {
+  width: 100%;
+  height: 90px;
+  margin: 14px 0;
+  color: #9c5cff;
+  background: #12121d;
+  border-radius: 14px;
+  padding: 10px;
+}
