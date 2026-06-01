@@ -331,11 +331,12 @@ async function loadStocks() {
 
   stocksList.innerHTML = "";
 
-  stocks.forEach(stock => {
+  for (const stock of stocks) {
     const owned = portfolio.find(item => item.stock_id === stock.id);
     const quantity = owned ? owned.quantity : 0;
     const value = quantity * Number(stock.price);
     const percent = ((Number(stock.price) - 100) / 100) * 100;
+    const chart = await loadStockHistory(stock.id);
 
     stocksList.innerHTML += `
       <div class="stockCard">
@@ -344,9 +345,7 @@ async function loadStocks() {
         <p>Aktualna cena: <b>${Number(stock.price).toFixed(2)} GC</b></p>
         <p>Zmiana od startu: <b>${percent.toFixed(2)}%</b></p>
 
-        <div class="miniChart">
-          <div class="miniChartLine" style="width:${Math.min(Math.max(Number(stock.price), 10), 250)}px"></div>
-        </div>
+        ${chart}
 
         <p>Masz: <b>${quantity}</b> akcji</p>
         <p>Wartość: <b>${value.toFixed(2)} GC</b></p>
@@ -359,7 +358,37 @@ async function loadStocks() {
         </div>
       </div>
     `;
+  }
+}
+async function loadStockHistory(stockId) {
+  const { data, error } = await db
+    .from("stock_history")
+    .select("price, created_at")
+    .eq("stock_id", stockId)
+    .order("created_at", { ascending: true })
+    .limit(20);
+
+  if (error || !data || data.length === 0) {
+    return "";
+  }
+
+  const prices = data.map(item => Number(item.price));
+  const max = Math.max(...prices);
+  const min = Math.min(...prices);
+
+  let points = "";
+
+  prices.forEach((price, index) => {
+    const x = (index / Math.max(prices.length - 1, 1)) * 100;
+    const y = 40 - ((price - min) / Math.max(max - min, 1)) * 35;
+    points += `${x},${y} `;
   });
+
+  return `
+    <svg class="stockChart" viewBox="0 0 100 45" preserveAspectRatio="none">
+      <polyline points="${points}" fill="none" stroke="currentColor" stroke-width="3" />
+    </svg>
+  `;
 }
 
 async function loadPortfolio() {
