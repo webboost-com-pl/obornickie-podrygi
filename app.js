@@ -477,6 +477,7 @@ async function loadHistory() {
     `;
   });
 }
+
 window.showScreen = showScreen;
 window.showPage = showPage;
 window.register = register;
@@ -488,3 +489,17 @@ window.attackPlayer = attackPlayer;
 window.openChestWithAnimation = openChestWithAnimation;
 window.buyStock = buyStock;
 window.sellStock = sellStock;
+async function testStocks() {
+  alert("Klik działa");
+
+  const { data, error } = await db
+    .from("stocks")
+    .select("*");
+
+  console.log("TEST STOCKS DATA:", data);
+  console.log("TEST STOCKS ERROR:", error);
+
+  alert(JSON.stringify(data) + " / " + JSON.stringify(error));
+}
+
+window.testStocks = testStocks;
