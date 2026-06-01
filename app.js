@@ -32,9 +32,15 @@ function showPage(pageId) {
   if (pageId === "attackPage") {
     loadPlayersForAttack();
   }
+
   if (pageId === "historyPage") {
-  loadHistory();
-}
+    loadHistory();
+  }
+
+  if (pageId === "stocksPage") {
+    loadStocks();
+    loadPortfolio();
+  }
 }
 
 async function register() {
@@ -316,6 +322,114 @@ async function openChestWithAnimation() {
     await loadInventory();
   }, 3000);
 }
+async function loadStocks() {
+  const stocksList = document.getElementById("stocksList");
+
+  const { data, error } = await db
+    .from("stocks")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    stocksList.innerHTML = "Nie udało się załadować giełdy.";
+    return;
+  }
+
+  stocksList.innerHTML = "";
+
+  data.forEach(stock => {
+    stocksList.innerHTML += `
+      <div class="stockCard">
+        <h3>${stock.name}</h3>
+        <p>Aktualna cena: <b>${Number(stock.price).toFixed(2)} GC</b></p>
+
+        <div class="stockActions">
+          <button onclick="buyStock(${stock.id}, 1)">Kup 1</button>
+          <button onclick="buyStock(${stock.id}, 10)">Kup 10</button>
+          <button onclick="sellStock(${stock.id}, 1)">Sprzedaj 1</button>
+          <button onclick="sellStock(${stock.id}, 10)">Sprzedaj 10</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+async function loadPortfolio() {
+  const portfolioList = document.getElementById("portfolioList");
+
+  const { data, error } = await db
+    .from("player_stocks")
+    .select(`
+      quantity,
+      stocks (
+        name,
+        price
+      )
+    `)
+    .gt("quantity", 0);
+
+  if (error) {
+    portfolioList.innerHTML = "Nie udało się załadować portfela.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    portfolioList.innerHTML = `<p class="empty">Nie masz jeszcze akcji.</p>`;
+    return;
+  }
+
+  portfolioList.innerHTML = "";
+
+  data.forEach(item => {
+    const value = item.quantity * Number(item.stocks.price);
+
+    portfolioList.innerHTML += `
+      <div class="rankingItem">
+        <div>
+          <b>${item.stocks.name}</b><br>
+          <span>${item.quantity} szt.</span>
+        </div>
+        <span>${value.toFixed(2)} GC</span>
+      </div>
+    `;
+  });
+}
+
+async function buyStock(stockId, amount) {
+  const { data, error } = await db.rpc("buy_stock", {
+    stock: stockId,
+    amount: amount
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = data;
+
+  await loadGame();
+  await loadStocks();
+  await loadPortfolio();
+}
+
+async function sellStock(stockId, amount) {
+  const { data, error } = await db.rpc("sell_stock", {
+    stock: stockId,
+    amount: amount
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  message.textContent = data;
+
+  await loadGame();
+  await loadStocks();
+  await loadPortfolio();
+}
 loadGame();
 async function loadHistory() {
   const historyList = document.getElementById("historyList");
@@ -381,3 +495,5 @@ window.claimDailyReward = claimDailyReward;
 window.buyItem = buyItem;
 window.attackPlayer = attackPlayer;
 window.openChestWithAnimation = openChestWithAnimation;
+window.buyStock = buyStock;
+window.sellStock = sellStock;
