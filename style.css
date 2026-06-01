@@ -211,3 +211,25 @@ button {
   font-size: 32px;
   font-weight: bold;
 }
+.stockCard {
+  background: #202033;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #30304a;
+  margin-bottom: 14px;
+}
+
+.stockCard h3 {
+  margin: 0 0 8px;
+}
+
+.stockActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stockActions button {
+  padding: 12px;
+  font-size: 14px;
+}
